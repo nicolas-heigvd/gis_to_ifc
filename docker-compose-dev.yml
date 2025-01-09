@@ -1,0 +1,25 @@
+# Created on Fri Nov 10 14:08:00 2024
+# Copyright (C) 2024-present {nicolas.blanc} @ HEIG-VD
+# This file is licensed under the GPL-3.0-only. See LICENSE file for details.
+# Third-party libraries and their licenses are listed in the NOTICE.md file.
+
+services:
+  app:
+    hostname: sepm
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: ${ENV}
+      args:
+        - ENV
+    environment:
+      - PYTHONUNBUFFERED=1
+    env_file: ".env"
+    tty: true
+    restart: "no"
+    working_dir: /app
+    entrypoint: ["python3", "main.py"]
+    # Mount the directory containing data
+    volumes:
+      - ${HOST_DATA_DIRECTORY}:/data
+      - ./src:/app

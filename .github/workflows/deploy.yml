@@ -1,0 +1,66 @@
+# Created on Fri Nov 10 14:08:00 2024
+# Copyright (C) 2024-present {nicolas.blanc} @ HEIG-VD
+# This file is licensed under the GPL-3.0-only. See LICENSE file for details.
+# Third-party libraries and their licenses are listed in the NOTICE.md file.
+
+name: "Deploy with Docker Compose"
+
+on:
+  workflow_run:
+    workflows: ["Build and Push Docker Image"]
+    types:
+      - completed
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      LOGLEVEL: "DEBUG"
+      DOWNLOAD_TILE: True
+
+    steps:
+    - name: "Checkout repository"
+      uses: actions/checkout@v4
+
+    - name: "Set up environment"
+      id: "setup_environment"
+      run: |
+        chmod +x entrypoint-ci.sh
+        chmod -R o+w ${GITHUB_WORKSPACE}/tests/data/
+        cp env.sample .env
+
+    - name: "Pull image from GHCR"
+      id: "pull_container"
+      run: |
+        docker pull --quiet ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+
+    - name: "Run the app"
+      id: "run_app"
+      run: |
+        docker compose run \
+          --rm \
+          --env LOGLEVEL \
+          --env DOWNLOAD_TILE \
+          --user root \
+          app
+      env:
+        LOGLEVEL: ${{ env.LOGLEVEL }}
+        DOWNLOAD_TILE: ${{ env.DOWNLOAD_TILE }}
+
+    - name: "Run the pre-commit hooks"
+      id: "run_pre-commit_hooks"
+      run: |
+        docker compose run \
+          --rm \
+          --user root \
+          --volume ${{ github.workspace }}:/code \
+          --entrypoint /code/entrypoint-ci.sh \
+          app
+
+    - name: "Bring the container down"
+      run: |
+        docker compose down

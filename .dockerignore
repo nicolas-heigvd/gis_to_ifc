@@ -1,0 +1,14 @@
+.git/
+.gitignore
+.dockerignore
+.env
+Dockerfile*
+docker-compose*.yml
+*.jpg
+*.zip
+*.pyc
+__pycache__/
+data/
+tests/
+*.ipynb
+.vscode/

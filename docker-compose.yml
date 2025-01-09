@@ -1,0 +1,18 @@
+
+# Created on Fri Nov 10 14:08:00 2024
+# Copyright (C) 2024-present {nicolas.blanc} @ HEIG-VD
+# This file is licensed under the GPL-3.0-only. See LICENSE file for details.
+# Third-party libraries and their licenses are listed in the NOTICE.md file.
+
+services:
+  app:
+    hostname: sepm
+    image: ghcr.io/nicolas-heigvd/gis_to_ifc:latest
+    environment:
+      - PYTHONUNBUFFERED=1
+    env_file: ".env"
+    restart: "no"
+    pull_policy: "always"
+    # Mount the directory containing data
+    volumes:
+      - ${HOST_DATA_DIRECTORY}:/data

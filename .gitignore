@@ -1,0 +1,16 @@
+*.env
+*.conf
+pgservice.ini
+node_modules/
+config.js
+package-lock.json
+*.jpg
+*.zip
+*.py[cod]
+__pycache__/
+*.ipynb
+*.bkp
+.vscode/
+**/OUTPUT/
+**/TEMP/
+requirements/*.txt
